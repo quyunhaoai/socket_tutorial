@@ -8,6 +8,8 @@
 
 #import "ViewController.h"
 
+#import "Singleton.h"
+
 @interface ViewController ()
 
 @end
@@ -17,13 +19,20 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    
+	[Singleton sharedInstance].socketHost = @"42.236.75.124";// host设定
+    [Singleton sharedInstance].socketPort = 9999;// port设定
+    
+    // 在连接前先进行手动断开
+    [Singleton sharedInstance].socket.userData = SocketOfflineByUser;
+    [[Singleton sharedInstance] cutOffSocket];
+    
+    // 确保断开后再连，如果对一个正处于连接状态的socket进行连接，会出现崩溃
+    [Singleton sharedInstance].socket.userData = SocketOfflineByServer;
+    [[Singleton sharedInstance] socketConnectHost];
+    
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+
 
 @end
